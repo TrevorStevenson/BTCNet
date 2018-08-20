@@ -30,3 +30,28 @@ class BTCDataset(Dataset):
     
     def input_size(self):
         return len(self[0])
+
+btcData = BTCDataset("bitcoinPrices.csv")
+batch_size = 10
+dataloader = DataLoader(btcData, batch_size=batch_size, shuffle=False, num_workers=2)
+
+class BTCNet(nn.Module):
+    def __init__(self, input_size, batch_size, hidden_size, output_size):
+        super(BTCNet, self).__init__()
+        
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.output_size = output_size
+        
+        self.lstm = nn.LSTM(input_size=input_size, hidden_size=hidden_size)
+        self.fc1 = nn.Linear(hidden_size, output_size)
+        self.relu = nn.ReLU()
+        
+        self.hidden = (torch.zeros(1, batch_size, hidden_size), torch.zeros(1, batch_size, hidden_size))
+       
+    def forward(self, data):
+        lstm_out, self.hidden = self.lstm(data.float(), self.hidden)
+        lin_out = self.fc1(lstm_out)
+        out = self.relu(lin_out)
+        out = out.float()
+        return out
