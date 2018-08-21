@@ -55,3 +55,9 @@ class BTCNet(nn.Module):
         out = self.relu(lin_out)
         out = out.float()
         return out
+
+btcModel = BTCNet(input_size=btcData.input_size(), batch_size=batch_size, hidden_size=5, output_size=1)
+
+for i, sample in enumerate(dataloader):
+    sample = sample.unsqueeze(0)
+    out = btcModel(sample)
