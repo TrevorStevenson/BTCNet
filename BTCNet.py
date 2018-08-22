@@ -71,3 +71,20 @@ with torch.no_grad():
     initial_out = btcModel(initial_in)
     print("Open price:", initial_in)
     print("Close price:", initial_out)
+
+num_epochs = 10
+
+for i in range(num_epochs):
+    for item in data_iter:
+        btcModel.zero_grad()
+        btcModel.hidden = btcModel.init_hidden()
+
+        item = item.unsqueeze(0)
+        next_out = btcModel(item)
+
+        next_target = btcData.getTarget(i+1, batch_size)
+
+        loss = mseLoss(next_out, next_target)
+        print("Epoch: ", i, " Loss: ", loss)
+        loss.backward()
+        optimizer.step()
