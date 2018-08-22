@@ -58,6 +58,16 @@ class BTCNet(nn.Module):
 
 btcModel = BTCNet(input_size=btcData.input_size(), batch_size=batch_size, hidden_size=5, output_size=1)
 
-for i, sample in enumerate(dataloader):
-    sample = sample.unsqueeze(0)
-    out = btcModel(sample)
+data_iter = iter(dataloader)
+
+learning_rate = 0.0001
+
+mseLoss = nn.MSELoss()
+optimizer = optim.SGD(btcModel.parameters(), lr=learning_rate)
+
+with torch.no_grad():
+    initial_in = next(data_iter)
+    initial_in = initial_in.unsqueeze(0)
+    initial_out = btcModel(initial_in)
+    print("Open price:", initial_in)
+    print("Close price:", initial_out)
